@@ -1,7 +1,7 @@
 import { fn } from "@storybook/test";
 
 import { NavbarExternal } from "./NavBarExternal";
-import { NavbarInternal } from "./NavBarInternal";
+import { NavbarInternal } from "./NavBarInternalSimple";
 
 export default {
   title: "MainApp/Navbar",
