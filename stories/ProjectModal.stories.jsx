@@ -1,15 +1,20 @@
 import React from "react";
-import { ProjectCard } from "./ProjectCard";
+import { ProjectModal } from "./ProjectModal";
 
 export default {
-  title: "MainApp/ProjectCard",
-  component: ProjectCard,
-  // This component will have an automatically generated Autodocs entry: https://storybook.js.org/docs/writing-docs/autodocs
+  title: "MainApp/ProjectModal",
+  component: ProjectModal,
   tags: ["autodocs"],
   parameters: {
-    // More on how to position stories at: https://storybook.js.org/docs/configure/story-layout
     // layout: "fullscreen",
   },
+  args: {
+    isOpen: true,
+    onClose: () => console.log("Modal closed"),
+  },
+};
+
+export const Default = {
   args: {
     title: "Project Phoenix",
     description:
@@ -31,10 +36,9 @@ export default {
   },
 };
 
-export const Default = {};
-
 export const SuspectOne = {
   args: {
+    ...Default.args,
     title: "James Wilson",
     description: "Former hospital orderly who worked the night shift. Was recently fired for suspicious behavior around the victim's ward.",
     updatedAt: "Last seen: 3 days ago",
@@ -64,6 +68,7 @@ export const SuspectOne = {
 
 export const SuspectTwo = {
   args: {
+    ...Default.args,
     title: "Sarah Chen",
     description: "Hospital administrator who had frequent conflicts with the victim over budget allocations. Was seen arguing with the victim hours before the incident.",
     updatedAt: "Last seen: 1 day ago",
@@ -93,6 +98,7 @@ export const SuspectTwo = {
 
 export const CrimeSceneOne = {
   args: {
+    ...Default.args,
     title: "Hospital Storage Room",
     description: "The victim was found in the hospital's medical supply storage room. The room was in disarray, with medical supplies scattered across the floor. A broken IV stand was found near the body, possibly used as the murder weapon.",
     updatedAt: "Discovered: 2 days ago",
@@ -122,6 +128,7 @@ export const CrimeSceneOne = {
 
 export const CrimeSceneTwo = {
   args: {
+    ...Default.args,
     title: "Hospital Parking Garage",
     description: "The victim's car was found in the hospital parking garage, Level B2. The vehicle's interior showed signs of a struggle, with the driver's seat reclined and the seatbelt mechanism damaged. Blood stains were found on the passenger side door handle.",
     updatedAt: "Discovered: 1 day ago",
@@ -147,4 +154,4 @@ export const CrimeSceneTwo = {
       }
     ],
   },
-};
+}; 
