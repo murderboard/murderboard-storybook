@@ -1,161 +1,161 @@
 import React, { useEffect, useState } from "react";
-import { Laptop, SquareMenu, X } from "lucide-react";
-
-import "./index.css"; // your tailwind styles
+import { Laptop, MessageSquare, Phone, SquareMenu, X } from "lucide-react";
+import "./index.css";
 
 import { ReactComponent as LogoLightMode } from "./assets/murderboard-light.svg";
 import { ReactComponent as LogoDarkMode } from "./assets/murderboard-dark.svg";
-
 import { useTheme } from "./ThemeContext";
 
-interface NavbarInternalProps
-  extends React.ButtonHTMLAttributes<HTMLButtonElement> {
-  headings: string[];
+interface Notification {
+  id: string;
+  type: 'sms' | 'email' | 'security' | 'internet';
+  message: string;
+  timestamp: string;
+  read: boolean;
 }
 
-export const NavbarInternalSubmenu = () => {
+interface NavbarInternalProps {
+  notifications?: Notification[];
+}
+
+interface MenuItem {
+  id: string;
+  title: string;
+  icon: React.ReactNode;
+  subItems: {
+    id: string;
+    title: string;
+    description: string;
+    type: 'sms' | 'email' | 'security' | 'internet';
+  }[];
+}
+
+const menuItems: MenuItem[] = [
+  {
+    id: 'phone',
+    title: 'Phone',
+    icon: <Phone className="size-4 mt-1" />,
+    subItems: [
+      {
+        id: 'sms',
+        title: 'SMS Messages',
+        description: 'Check your text messages',
+        type: 'sms'
+      },
+      {
+        id: 'calls',
+        title: 'Missed Calls',
+        description: 'View your call history',
+        type: 'sms'
+      }
+    ]
+  },
+  {
+    id: 'computer',
+    title: 'Computer',
+    icon: <Laptop className="size-4 mt-1" />,
+    subItems: [
+      {
+        id: 'email',
+        title: 'Email',
+        description: 'Check your inbox',
+        type: 'email'
+      },
+      {
+        id: 'security',
+        title: 'Security System',
+        description: 'Monitor security cameras',
+        type: 'security'
+      },
+      {
+        id: 'internet',
+        title: 'Internet Search',
+        description: 'Search the web',
+        type: 'internet'
+      }
+    ]
+  }
+];
+
+export const NavbarInternalSubmenu: React.FC<{ notifications?: Notification[] }> = ({ notifications = [] }) => {
+  const hasUnreadNotifications = notifications.some(n => !n.read);
+
   return (
-    // <div
-    //   id="hs-dropdown-menu"
-    //   className="hs-dropdown-menu transition-[opacity,margin] duration-[0.1ms] md:duration-[150ms] hs-dropdown-open:opacity-100 opacity-0 relative w-full min-w-60 hidden z-10 top-full start-0 before:absolute before:-top-5 before:start-0 before:w-full before:h-5"
-    //   role="menu"
-    //   aria-orientation="vertical"
-    //   aria-labelledby="hs-header-base-mega-menu-fullwidth"
-    // >
     <div className="md:mx-6 lg:mx-8 md:bg-white md:rounded-lg md:shadow-md dark:md:bg-neutral-800">
-      {/* Grid */}
-      <div className="py-1 md:p-2 md:grid md:grid-cols-2 lg:grid-cols-3 gap-4">
-        <div className="flex flex-col">
-          {/* Link */}
-          <a
-            className="p-3 flex gap-x-4 hover:bg-gray-100 focus:outline-hidden focus:bg-gray-100 rounded-lg dark:text-neutral-200 dark:hover:bg-neutral-700 dark:focus:bg-neutral-700"
-            href="#"
-          >
-            <svg
-              className="shrink-0 size-4 mt-1 text-gray-800 dark:text-neutral-200"
-              xmlns="http://www.w3.org/2000/svg"
-              width="24"
-              height="24"
-              viewBox="0 0 24 24"
-              fill="none"
-              stroke="currentColor"
-              strokeWidth="2"
-              strokeLinecap="round"
-              strokeLinejoin="round"
-            >
-              <path d="M2 3h6a4 4 0 0 1 4 4v14a3 3 0 0 0-3-3H2z" />
-              <path d="M22 3h-6a4 4 0 0 0-4 4v14a3 3 0 0 1 3-3h7z" />
-            </svg>
-            <div className="grow">
-              <p className="font-medium text-sm text-gray-800 dark:text-neutral-200">
-                Computer
-              </p>
-              <p className="text-sm text-gray-500 dark:text-neutral-500">
-                You have a new notification on your computer.
-              </p>
+      <div className="py-1 md:p-2 md:grid md:grid-cols-2 gap-4">
+        {menuItems.map((item) => (
+          <div key={item.id} className="flex flex-col">
+            <div className="p-3 flex gap-x-4 items-center">
+              <div className="text-gray-800 dark:text-neutral-200">
+                {item.icon}
+              </div>
+              <div className="grow">
+                <p className="font-medium text-sm text-gray-800 dark:text-neutral-200">
+                  {item.title}
+                </p>
+              </div>
             </div>
-          </a>
-          {/* End Link */}
-        </div>
-        {/* End Col */}
-
-        <div className="flex flex-col">
-          {/* Link */}
-          <a
-            className="p-3 flex gap-x-4 hover:bg-gray-100 focus:outline-hidden focus:bg-gray-100 rounded-lg dark:text-neutral-200 dark:hover:bg-neutral-700 dark:focus:bg-neutral-700"
-            href="#"
-          >
-            <Laptop />
-            <div className="grow">
-              <p className="font-medium text-sm text-gray-800 dark:text-neutral-200">
-                Phone
-              </p>
-              <p className="text-sm text-gray-500 dark:text-neutral-500">
-                You have a new text message.
-              </p>
+            
+            {/* Sub-items */}
+            <div className="pl-12 space-y-2">
+              {item.subItems.map((subItem) => {
+                const hasNotification = notifications.some(
+                  n => n.type === subItem.type && !n.read
+                );
+                
+                return (
+                  <a
+                    key={subItem.id}
+                    href="#"
+                    className="block p-2 hover:bg-gray-100 focus:outline-hidden focus:bg-gray-100 rounded-lg dark:text-neutral-200 dark:hover:bg-neutral-700 dark:focus:bg-neutral-700"
+                  >
+                    <div className="flex items-center gap-2">
+                      <span className="text-sm text-gray-600 dark:text-neutral-400">
+                        {subItem.title}
+                      </span>
+                      {hasNotification && (
+                        <span className="relative flex h-2 w-2">
+                          <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-red-400 opacity-75"></span>
+                          <span className="relative inline-flex rounded-full h-2 w-2 bg-red-500"></span>
+                        </span>
+                      )}
+                    </div>
+                    <p className="text-xs text-gray-500 dark:text-neutral-500 mt-1">
+                      {subItem.description}
+                    </p>
+                  </a>
+                );
+              })}
             </div>
-          </a>
-          {/* End Link */}
-        </div>
-        {/* End Col */}
-
-        <div className="mt-2 md:mt-0 flex flex-col">
-          <span className="ms-2.5 mb-2 font-semibold text-xs uppercase text-gray-800 dark:text-neutral-200">
-            Customer stories
-          </span>
-
-          {/* Link */}
-          <a
-            className="p-3 flex gap-x-5 items-center rounded-xl hover:bg-gray-100 focus:outline-hidden focus:bg-gray-100 dark:hover:bg-neutral-700 dark:focus:bg-neutral-700"
-            href="#"
-          >
-            <img
-              className="size-32 rounded-lg"
-              src="https://images.unsplash.com/photo-1648737967328-690548aec14f?ixlib=rb-4.0.3&ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&auto=format&fit=crop&w=320&h=320&q=80"
-              alt="Avatar"
-            />
-            <div className="grow">
-              <p className="text-sm text-gray-800 dark:text-neutral-400">
-                Preline Projects has proved to be most efficient cloud based
-                project tracking and bug tracking tool.
-              </p>
-              <p className="mt-3 inline-flex items-center gap-x-1 text-sm text-blue-600 decoration-2 group-hover:underline group-focus:underline font-medium dark:text-blue-400">
-                Learn more
-                <svg
-                  className="shrink-0 size-4"
-                  xmlns="http://www.w3.org/2000/svg"
-                  width="24"
-                  height="24"
-                  viewBox="0 0 24 24"
-                  fill="none"
-                  stroke="currentColor"
-                  strokeWidth="2"
-                  strokeLinecap="round"
-                  strokeLinejoin="round"
-                >
-                  <path d="m9 18 6-6-6-6" />
-                </svg>
-              </p>
-            </div>
-          </a>
-          {/* End Link */}
-        </div>
-        {/* End Col */}
+          </div>
+        ))}
       </div>
-      {/* End Grid */}
     </div>
-    // </div>
   );
 };
 
 export const NavbarInternal: React.FC<NavbarInternalProps> = ({
-  headings = ["Example"],
+  notifications = []
 }) => {
-  useEffect(() => {
-    import("preline").then(({ HSStaticMethods }) => {
-      HSStaticMethods.autoInit();
-    });
-  }, []);
-
-  console.log({ headings });
   const theme = useTheme();
-  console.log({ theme });
-
   const [menuOpen, setMenuOpen] = useState(false);
+  const hasUnreadNotifications = notifications.some(n => !n.read);
 
   return (
     <header className="w-full bg-white border-b border-gray-200 dark:bg-neutral-800 dark:border-neutral-700 z-50">
       <nav className="max-w-[85rem] mx-auto flex items-center justify-between px-4 py-2 sm:px-6 lg:px-8">
         {/* Logo */}
         <a href="#" className="flex items-center">
-          {theme === "dark" ? (
-            <LogoDarkMode className="w-auto max-h-[88px]" />
-          ) : (
-            <LogoLightMode className="w-auto max-h-[88px]" />
-          )}
+          <div className="w-[200px] h-[50px]">
+            {theme === "dark" ? (
+              <LogoDarkMode className="w-full h-full" preserveAspectRatio="xMidYMid meet" />
+            ) : (
+              <LogoLightMode className="w-full h-full" preserveAspectRatio="xMidYMid meet" />
+            )}
+          </div>
         </a>
 
-        {/* Hamburger Button */}
+        {/* Hamburger Button with Notification */}
         <button
           type="button"
           onClick={() => setMenuOpen(!menuOpen)}
@@ -165,15 +165,23 @@ export const NavbarInternal: React.FC<NavbarInternalProps> = ({
           {menuOpen ? (
             <X className="size-4" />
           ) : (
-            <SquareMenu className="size-4" />
+            <div className="relative">
+              <SquareMenu className="size-4" />
+              {hasUnreadNotifications && (
+                <span className="absolute -top-1 -right-1 flex h-2 w-2">
+                  <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-red-400 opacity-75"></span>
+                  <span className="relative inline-flex rounded-full h-2 w-2 bg-red-500"></span>
+                </span>
+              )}
+            </div>
           )}
         </button>
       </nav>
 
-      {/* Mega Menu Always Opens from Hamburger */}
+      {/* Mega Menu */}
       {menuOpen && (
         <div className="bg-white dark:bg-neutral-800 border-t border-gray-200 dark:border-neutral-700">
-          <NavbarInternalSubmenu />
+          <NavbarInternalSubmenu notifications={notifications} />
         </div>
       )}
     </header>
